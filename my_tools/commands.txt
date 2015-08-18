@@ -1,0 +1,147 @@
+flash phones:
+adb devices
+adb reboot bootloader
+fastboot -w
+fastboot erase userdata
+fastboot erase cache
+fastboot erase frp(if the phone locked)
+fastboot getvar all(unsecure)
+
+
+
+check EVT/P2 devices:
+adb root
+adb shell
+cd pds/camera/ledcal
+ls
+If data, EVT
+Otherwise, P2
+
+
+
+nod head:
+adb shell screenrecord --time-limit 20 /sdcard/DCIM/Camera/Lux_level_X.mp4
+
+
+
+
+lens test SFR cygwin: (convert raw into bmp)
+
+Attention: change directory and IMX
+
+cd /cygdrive/c
++ /AYA.../Result_Images/Sample_1_60cm
+
+cd /cygdrive/c/AYAforCUE_1.15.0E_64bit/Results_Images/Sample_4_60cm
+for i in *.raw; do ./RawReaderCmd $i Toshiba_13M_EVK_T4K82.mat -rotate270 -mirrorlr -demosaic; done
+
+
+
+
+NR test:
+take one pic:
+adb shell input keyevent 66
+(below in cygwin)
+Attention!!!adb root
+check current lens pos:
+adb logcat|grep lens
+set aflock:
+disable it: aflock -1
+position 10: aflock 10
+5 pics in a row"
+aflocksnap(but need to set the lens pos first: encoding: UTF-8 without BOM)
+
+
+
+exposure sweep: turn on Log AEC
+adb shell logcat | find "exp_index"
+adb logcat | grep cur_lum
+adb logcat >a.txt - start
+adb logcat -c - clear log file
+
+
+flash build:
+flashboot flash boot ...boot.img
+flashboot flash system ...system.img
+
+
+
+push .so files to lib:
+adb push ....... .so /system/lib
+
+
+
+install nightmode apk:
+adb install -r MotCamera-v5.0.26.NightMode-debug.apk
+
+
+
+raw capture:(or folder /data/camera_dump (for Clark))
+Lynx/Callisto:
+adb root
+adb shell setenforce Permissive
+adb shell chmod 777 /data/misc/camera
+adb shell setprop persist.camera.zsl_raw 1
+adb shell setprop persist.camera.dumpimg 16
+adb shell setprop persist.camera.raw_yuv 1
+and the files will be stored in data/misc/camera
+
+Clark/Bounce:
+adb root
+adb shell chmod 777 /data/misc/camera
+adb shell setprop persist.camera.snap.format 17 
+adb shell setprop persist.camera.raw_yuv 1
+adb shell setprop persist.camera.zsl_raw 1
+adb shell setprop persist.camera.dumpimg 28
+adb shell setprop persist.camera.dumpmetadata 1
+adb shell setprop persist.camera.zsl_yuv 1
+adb shell setprop persist.camera.snapshot 1
+
+take a pic:
+adb shell input keyevent 66
+
+list:
+adb shell ls /data/misc/camera/*.raw
+
+remove:
+adb shell rm /data/misc/camera/*.raw
+
+pull all pics out:
+adb shell ls /data/misc/camera/*.raw | tr "\n\r" " " | xargs -n1 adb pull
+
+pull a specific one out:
+adb pull /dir/file_name
+
+find out where the raw files are:
+find -name *.raw
+
+
+
+push a test library on a device:
+adb root 
+adb remount 
+adb push libAlAisLib.so /system/lib/ 
+adb push libAlAisTune.so /system/lib/ 
+adb push libAlAisWrap.so /system/lib/ 
+adb reboot
+
+
+
+go to phone:
+adb shell
+cd sdcard
+ls
+remove all the images:
+adb shell rm /sdcard/*.*
+pull out all the raw:
+adb pull /sdcard/
+pull out all the jpg:
+adb pull ./storage/emulated/legacy/ ~/Desktop/
+
+turn on factory mode:
+fastboot oem config bootmode factory
+go back to regular sw ***so the phone will charge:
+fastboot oem config bootmode " "
+
+adb remount enable:
+fastboot oem wptest disable
