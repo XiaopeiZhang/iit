@@ -1,0 +1,78 @@
+git:
+
+git pull origin review
+
+git status
+
+git checkout -b review
+
+git commit -a -m "add ocr options"
+
+git push origin review
+
+
+Create the .ssh directory and the authorized_keys file the first time:
+
+mkdir ~/.ssh
+
+chmod 700 ~/.ssh
+
+touch ~/.ssh/authorized_keys
+
+chmod 600 ~/.ssh/authorized_keys
+
+nano ~/.ssh/authorized_keys
+
+cd /var/www
+
+current script on Beckett lives here: /usr/local/sbin/s3backup.sh
+runs weekly as root
+sudo vim /usr/local/sbin/s3backup.sh
+
+put pscp.exe in the directory:
+pscp -i beckettServerPrivateKey.ppk fetch.html xiaopei@beckett.casmlab.org:/home/xiaopei/FacebookCollector/fetch
+
+    # Please complete this method.
+    """Inserts val into the tree. There is no need to rebalance the tree."""
+    def insert(self, val):
+        def insertNode(node,val):# recursive function to find the position to insert the new node
+            if node.val>val: # if the new node is smaller, go to the left
+                if node.left: insertNode(node.left,val)
+                else: node.left=Node(val)
+            elif node.val<val: # if the new node is larger, go to the right
+                if node.right: insertNode(node.right,val)
+                else: node.right=Node(val)
+            else: # if the new node is equal, go to the mid
+                if node.mid: insertNode(node.mid,val)
+                else: node.mid=Node(val)
+        
+        if self.root==None: self.root=Node(val) # if there is no root, put the new node at the root
+        else: insertNode(self.root,val)
+
+    # Please complete this method.
+    """Deletes only one instance of val from the tree.
+       If val does not exist in the tree, do nothing.
+       There is no need to rebalance the tree."""
+    def delete(self, val):
+        def findSuc(node):
+            while node.left:
+                node=node.left
+            return node
+        def deleteNode(node,val): # recursive function to delete node
+            if not node: return None
+            if node.val>val: deleteNode(node.left,val)
+            elif node.val<val: deleteNode(node.right,val)
+            else:
+                if not node.left and not node.right and not node.mid: return None
+                if node.mid: deleteNode(node.mid,val)
+                else:
+                    if node.left and node.right:
+                        suc=findSuc(node.right)
+                        node.val=suc.val
+                        node.right=deleteNode(node.right,suc.val)
+                    elif node.left:
+                        return node.left
+                    else:
+                        return node.right
+            return node
+        self.root=deleteNode(self.root,val)
